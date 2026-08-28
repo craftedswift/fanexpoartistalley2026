@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AX 2026 Artist Alley — Ranked by Social Following</title>
+<meta name="description" content="The Anime Expo 2026 Artist Alley list, ranked by combined Twitter/X + Instagram follower count." />
+<style>
+  :root {
+    --bg: #0d1117;
+    --bg-elev: #161b22;
+    --bg-row: #11161d;
+    --bg-row-alt: #141a23;
+    --bg-hover: #1d2530;
+    --border: #2a3340;
+    --text: #e6edf3;
+    --text-dim: #9aa6b3;
+    --text-muted: #6b7785;
+    --accent: #ffb74d;
+    --accent-dim: #b8842a;
+    --pink: #ff7eb3;
+    --blue: #58a6ff;
+    --green: #56d364;
+    --shadow: 0 4px 12px rgba(0, 0, 0, 0.45);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 14px; line-height: 1.45; }
+  a { color: var(--blue); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .wrap { max-width: 1240px; margin: 0 auto; padding: 24px 20px 80px; }
+  header.page {
+    display: flex; flex-direction: column; gap: 6px;
+    padding: 8px 0 22px;
+  }
+  header.page h1 { margin: 0; font-size: 24px; font-weight: 700; letter-spacing: -0.2px; }
+  header.page h1 .accent { color: var(--accent); }
+  header.page .sub { color: var(--text-dim); font-size: 13px; }
+  header.page .stats { color: var(--text-muted); font-size: 12px; }
+
+  .controls {
+    position: sticky; top: 0; z-index: 10;
+    background: var(--bg);
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+    display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
+    margin-bottom: 16px;
+  }
+  .search {
+    flex: 1 1 240px; min-width: 200px;
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 14px;
+    outline: none;
+  }
+  .search:focus { border-color: var(--accent); }
+  .toggle {
+    display: inline-flex; background: var(--bg-elev); border: 1px solid var(--border); border-radius: 8px; overflow: hidden;
+  }
+  .toggle button {
+    background: transparent; border: 0; color: var(--text-dim); padding: 8px 14px; font: inherit; cursor: pointer;
+  }
+  .toggle button.on { background: var(--accent); color: #1a1408; font-weight: 600; }
+  .pill {
+    background: var(--bg-elev); border: 1px solid var(--border); color: var(--text-dim);
+    padding: 6px 12px; border-radius: 999px; font-size: 12px;
+  }
+  .pill strong { color: var(--text); }
+
+  details.methodology {
+    background: var(--bg-elev); border: 1px solid var(--border); border-radius: 8px;
+    padding: 10px 14px; margin-bottom: 18px; font-size: 13px; color: var(--text-dim);
+  }
+  details.methodology summary { cursor: pointer; color: var(--text); font-weight: 600; font-size: 13px; }
+  details.methodology p { margin: 10px 0; }
+  details.methodology code { background: #0a0e14; padding: 1px 6px; border-radius: 4px; color: var(--accent); }
+
+  /* TABLE VIEW */
+  table.ranked {
+    width: 100%; border-collapse: separate; border-spacing: 0;
+    background: var(--bg-elev); border: 1px solid var(--border); border-radius: 10px; overflow: hidden;
+  }
+  table.ranked th {
+    text-align: left; padding: 11px 12px;
+    background: #0c1117; color: var(--text-dim);
+    font-size: 11px; font-weight: 600; letter-spacing: 0.6px; text-transform: uppercase;
+    position: relative; z-index: 1;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer; user-select: none; white-space: nowrap;
+  }
+  table.ranked th.numeric { text-align: right; }
+  table.ranked th .arr { color: var(--accent); margin-left: 4px; }
+  table.ranked th:not(.sorted) .arr { opacity: 0.2; }
+  table.ranked td {
+    padding: 10px 12px; border-bottom: 1px solid #1c2230; vertical-align: middle;
+  }
+  table.ranked tr:nth-child(even) td { background: var(--bg-row-alt); }
+  table.ranked tr:hover td { background: var(--bg-hover); }
+  table.ranked tr:last-child td { border-bottom: 0; }
+  td.rank { width: 48px; font-variant-numeric: tabular-nums; color: var(--text-muted); font-weight: 600; }
+  td.rank.top { color: var(--accent); }
+  td.avatar { width: 44px; padding-right: 0; }
+  td.avatar .pic { width: 32px; height: 32px; border-radius: 50%; background: var(--bg-row); display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-weight: 700; font-size: 13px; overflow: hidden; border: 1px solid var(--border); }
+  td.avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  td.name { font-weight: 600; max-width: 320px; }
+  td.name .nm { display: block; }
+  td.name .desc { display: block; color: var(--text-muted); font-size: 11px; font-weight: 400; margin-top: 2px; max-width: 360px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  td.booth { font-variant-numeric: tabular-nums; color: var(--text-dim); width: 70px; }
+  td.numeric { text-align: right; font-variant-numeric: tabular-nums; }
+  td.numeric.muted { color: var(--text-muted); }
+  td.numeric.score { font-weight: 700; color: var(--accent); }
+  td.links { width: 110px; white-space: nowrap; }
+  td.links a { display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 6px; background: #0c1117; border: 1px solid var(--border); margin-right: 4px; color: var(--text-dim); transition: all .12s; }
+  td.links a:hover { background: var(--accent); color: #1a1408; border-color: var(--accent); text-decoration: none; }
+  td.links a svg { width: 14px; height: 14px; }
+
+  /* CARD VIEW */
+  .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; }
+  .card {
+    background: var(--bg-elev); border: 1px solid var(--border); border-radius: 12px;
+    padding: 16px; display: flex; flex-direction: column; gap: 8px;
+    transition: transform .12s, border-color .12s;
+  }
+  .card:hover { border-color: var(--accent); transform: translateY(-1px); }
+  .card .head { display: flex; gap: 12px; align-items: center; }
+  .card .pic { width: 52px; height: 52px; border-radius: 50%; background: var(--bg-row); display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-weight: 700; font-size: 18px; overflow: hidden; border: 1px solid var(--border); flex-shrink: 0; }
+  .card .pic img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .card .head .meta { flex: 1; min-width: 0; }
+  .card .head .nm { font-weight: 700; font-size: 15px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .card .head .booth { color: var(--text-dim); font-size: 12px; margin-top: 2px; }
+  .card .rank-badge { position: absolute; }
+  .card { position: relative; }
+  .card .rank-bubble {
+    position: absolute; top: 10px; right: 10px;
+    background: #0c1117; border: 1px solid var(--border); color: var(--text-muted);
+    border-radius: 6px; padding: 3px 8px; font-size: 11px; font-weight: 700; font-variant-numeric: tabular-nums;
+  }
+  .card .rank-bubble.top { color: var(--accent); border-color: var(--accent-dim); }
+  .card .followers { display: flex; gap: 14px; padding-top: 8px; border-top: 1px solid #1c2230; }
+  .card .followers .one { flex: 1; }
+  .card .followers .label { color: var(--text-muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.4px; }
+  .card .followers .num { font-weight: 700; font-size: 16px; font-variant-numeric: tabular-nums; margin-top: 2px; }
+  .card .followers .num.ig { color: var(--pink); }
+  .card .followers .num.x { color: var(--text); }
+  .card .desc { color: var(--text-muted); font-size: 12px; line-height: 1.45; max-height: 3.6em; overflow: hidden; }
+  .card .footer { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding-top: 8px; border-top: 1px solid #1c2230; }
+  .card .links a { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 6px; background: #0c1117; border: 1px solid var(--border); margin-right: 4px; color: var(--text-dim); }
+  .card .links a:hover { background: var(--accent); color: #1a1408; border-color: var(--accent); text-decoration: none; }
+  .card .links a svg { width: 14px; height: 14px; }
+  .card .score { color: var(--accent); font-weight: 700; font-size: 13px; }
+
+  .empty { padding: 60px 20px; text-align: center; color: var(--text-muted); }
+
+  footer.page { margin-top: 40px; text-align: center; color: var(--text-muted); font-size: 12px; }
+  footer.page a { color: var(--text-dim); }
+
+  @media (max-width: 720px) {
+    td.name .desc { display: none; }
+    table.ranked th, table.ranked td { padding: 8px 6px; font-size: 13px; }
+    td.avatar { width: 32px; }
+    td.avatar .pic { width: 26px; height: 26px; }
+    td.booth { width: 50px; }
+    td.links { width: 78px; }
+    td.links a { width: 22px; height: 22px; margin-right: 2px; }
+  }
+  @media (max-width: 540px) {
+    td.booth { display: none; }
+    th[data-sort="booth"] { display: none; }
+    .card .desc { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="page">
+    <h1>AX 2026 Artist Alley <span class="accent">ranked</span> by social following</h1>
+    <div class="sub">All <span id="total-count">…</span> artists from the official AX 2026 Artist Alley list, ranked by their combined Twitter/X + Instagram follower count.</div>
+    <div class="stats" id="stats-line"></div>
+  </header>
+
+  <details class="methodology">
+    <summary>How it works</summary>
+    <p><strong>Source list:</strong> The official AX 2026 Artist Alley page at <a href="https://www.anime-expo.org/ax2026aalist/" target="_blank">anime-expo.org/ax2026aalist</a>.</p>
+    <p><strong>Follower counts:</strong> Instagram counts come from each profile's public Open Graph metadata (rounded to the nearest "K" the same way IG displays them — for example 29,341 → 29K). Twitter/X counts come from the public syndication embed endpoint and are exact.</p>
+    <p><strong>Combined score:</strong> <code>score = max(IG followers, X followers)</code>. Artists with only one platform score on whichever they have. Artists with neither platform (or with private/empty accounts) score 0 and sort last.</p>
+    <p><strong>Notes:</strong> These counts show where each account stood when this page was built — they don't refresh live. Some accounts are private, suspended, empty, or use uncommon handles, in which case the count shows as "—". Profile pictures from Instagram use temporary signed URLs and may stop loading after a few days; pictures from X are stable.</p>
+  </details>
+
+  <div class="controls">
+    <input type="text" class="search" id="search" placeholder="Search by artist name, booth, or handle…" />
+    <span class="pill">View<strong style="margin: 0 6px;">·</strong>
+      <span class="toggle" style="display:inline-flex;margin-left:4px;">
+        <button id="view-table" class="on">Table</button>
+        <button id="view-cards">Cards</button>
+      </span>
+    </span>
+    <span class="pill" id="count-pill">— shown</span>
+  </div>
+
+  <div id="table-view">
+    <table class="ranked" id="ranked-table">
+      <thead>
+        <tr>
+          <th data-sort="rank" class="sorted">#<span class="arr">▾</span></th>
+          <th class="avatar"></th>
+          <th data-sort="name">Artist<span class="arr">▾</span></th>
+          <th data-sort="booth">Booth<span class="arr">▾</span></th>
+          <th data-sort="ig_followers" class="numeric">Instagram<span class="arr">▾</span></th>
+          <th data-sort="x_followers" class="numeric">Twitter/X<span class="arr">▾</span></th>
+          <th data-sort="score" class="numeric">Score<span class="arr">▾</span></th>
+          <th>Links</th>
+        </tr>
+      </thead>
+      <tbody id="rows"></tbody>
+    </table>
+  </div>
+
+  <div id="cards-view" class="cards" style="display:none;"></div>
+
+  <div id="empty" class="empty" style="display:none;">No artists match that search.</div>
+
+  <footer class="page">
+    Data comes from public IG og-tags and the X syndication API. Combined score = max(IG, X) followers. ·
+    <a href="https://www.anime-expo.org/ax2026aalist/" target="_blank">Official AX list ↗</a>
+  </footer>
+</div>
+
+<script id="artist-data" type="application/json">__DATA__</script>
+<script>
+(function () {
+  const SVG = {
+    ig: '<svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M12 2.16c3.2 0 3.58.01 4.85.07 1.17.05 1.8.25 2.23.41.56.22.96.48 1.38.9.42.42.68.82.9 1.38.16.42.36 1.06.41 2.23.06 1.27.07 1.65.07 4.85s-.01 3.58-.07 4.85c-.05 1.17-.25 1.8-.41 2.23-.22.56-.48.96-.9 1.38-.42.42-.82.68-1.38.9-.42.16-1.06.36-2.23.41-1.27.06-1.65.07-4.85.07s-3.58-.01-4.85-.07c-1.17-.05-1.8-.25-2.23-.41a3.71 3.71 0 0 1-1.38-.9 3.71 3.71 0 0 1-.9-1.38c-.16-.42-.36-1.06-.41-2.23C2.17 15.58 2.16 15.2 2.16 12s.01-3.58.07-4.85c.05-1.17.25-1.8.41-2.23.22-.56.48-.96.9-1.38.42-.42.82-.68 1.38-.9.42-.16 1.06-.36 2.23-.41C8.42 2.17 8.8 2.16 12 2.16M12 0C8.74 0 8.33.01 7.05.07 5.78.13 4.9.33 4.14.63a5.9 5.9 0 0 0-2.13 1.39A5.9 5.9 0 0 0 .63 4.14C.33 4.9.13 5.78.07 7.05.01 8.33 0 8.74 0 12s.01 3.67.07 4.95c.06 1.27.26 2.15.56 2.91.31.79.73 1.46 1.39 2.13.66.66 1.34 1.08 2.13 1.39.76.3 1.64.5 2.91.56C8.33 23.99 8.74 24 12 24s3.67-.01 4.95-.07c1.27-.06 2.15-.26 2.91-.56a5.9 5.9 0 0 0 2.13-1.39 5.9 5.9 0 0 0 1.39-2.13c.3-.76.5-1.64.56-2.91.06-1.28.07-1.69.07-4.95s-.01-3.67-.07-4.95c-.06-1.27-.26-2.15-.56-2.91a5.9 5.9 0 0 0-1.39-2.13A5.9 5.9 0 0 0 19.86.63c-.76-.3-1.64-.5-2.91-.56C15.67.01 15.26 0 12 0Zm0 5.84A6.16 6.16 0 1 0 18.16 12 6.16 6.16 0 0 0 12 5.84M12 16a4 4 0 1 1 4-4 4 4 0 0 1-4 4m6.4-11.85a1.44 1.44 0 1 0 1.44 1.44 1.44 1.44 0 0 0-1.44-1.44"/></svg>',
+    x: '<svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>',
+    web: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>',
+  };
+
+  const dataEl = document.getElementById('artist-data');
+  let ARTISTS = [];
+  try { ARTISTS = JSON.parse(dataEl.textContent); }
+  catch (e) { console.error('Bad data:', e); }
+
+  // Compute score
+  function score(a) {
+    const ig = a.ig_followers || 0;
+    const xf = a.x_followers || 0;
+    return Math.max(ig, xf);
+  }
+  ARTISTS.forEach(a => { a.score = score(a); });
+
+  // initial sort: score desc, then by name
+  ARTISTS.sort((a, b) => (b.score - a.score) || a.name.localeCompare(b.name));
+  ARTISTS.forEach((a, i) => { a.rank = i + 1; });
+
+  document.getElementById('total-count').textContent = ARTISTS.length;
+  const withIG = ARTISTS.filter(a => a.ig_followers).length;
+  const withX = ARTISTS.filter(a => a.x_followers).length;
+  document.getElementById('stats-line').textContent =
+    `${withIG} have Instagram follower data · ${withX} have Twitter/X follower data · score = max(IG, X)`;
+
+  function fmt(n) {
+    if (n == null || n === 0) return '—';
+    if (n >= 1_000_000) return (n / 1_000_000).toFixed(n >= 10_000_000 ? 0 : 1) + 'M';
+    if (n >= 10_000) return Math.round(n / 1000) + 'K';
+    if (n >= 1_000) return (n / 1000).toFixed(1) + 'K';
+    return n.toLocaleString();
+  }
+  function fullNum(n) { return n == null ? '' : n.toLocaleString(); }
+
+  function pic(a) {
+    return a.x_profile_pic || a.ig_profile_pic || null;
+  }
+
+  function initials(name) {
+    return (name || '?').replace(/[^a-z0-9 ]/gi, '').trim().split(/\s+/).slice(0, 2).map(s => s[0] || '').join('').toUpperCase() || '?';
+  }
+
+  function linksHTML(a, large) {
+    const cls = '';
+    const out = [];
+    if (a.ig_handle) {
+      out.push(`<a href="https://www.instagram.com/${a.ig_handle}/" target="_blank" rel="noopener" title="@${a.ig_handle} on Instagram" aria-label="Instagram">${SVG.ig}</a>`);
+    }
+    if (a.x_handle) {
+      out.push(`<a href="https://x.com/${a.x_handle}" target="_blank" rel="noopener" title="@${a.x_handle} on X" aria-label="X">${SVG.x}</a>`);
+    }
+    if (a.website) {
+      out.push(`<a href="${a.website}" target="_blank" rel="noopener" title="${a.website}" aria-label="Website">${SVG.web}</a>`);
+    }
+    return out.join('');
+  }
+
+  function picHTML(a, large) {
+    const url = pic(a);
+    if (url) return `<img src="${url}" alt="" loading="lazy" onerror="this.style.display='none';this.parentNode.textContent='${initials(a.name)}';" />`;
+    return initials(a.name);
+  }
+
+  // --- render table ---
+  let currentSort = { key: 'rank', dir: 'asc' };
+  const tbody = document.getElementById('rows');
+  function renderTable(filtered) {
+    const rows = filtered.map(a => {
+      const rankCls = a.rank <= 10 ? 'rank top' : 'rank';
+      return `<tr data-id="${a.id}">
+        <td class="${rankCls}">${a.rank}</td>
+        <td class="avatar"><div class="pic">${picHTML(a)}</div></td>
+        <td class="name">
+          <span class="nm">${escapeHTML(a.name)}</span>
+          <span class="desc">${escapeHTML(a.desc || '')}</span>
+        </td>
+        <td class="booth">${escapeHTML(a.booth || '—')}</td>
+        <td class="numeric ${a.ig_followers ? '' : 'muted'}" title="${fullNum(a.ig_followers)}">${fmt(a.ig_followers)}</td>
+        <td class="numeric ${a.x_followers ? '' : 'muted'}" title="${fullNum(a.x_followers)}">${fmt(a.x_followers)}</td>
+        <td class="numeric score">${fmt(a.score)}</td>
+        <td class="links">${linksHTML(a)}</td>
+      </tr>`;
+    }).join('');
+    tbody.innerHTML = rows;
+  }
+
+  // --- render cards ---
+  const cardsEl = document.getElementById('cards-view');
+  function renderCards(filtered) {
+    const cards = filtered.map(a => {
+      const rankCls = a.rank <= 10 ? 'rank-bubble top' : 'rank-bubble';
+      return `<div class="card" data-id="${a.id}">
+        <div class="${rankCls}">#${a.rank}</div>
+        <div class="head">
+          <div class="pic">${picHTML(a)}</div>
+          <div class="meta">
+            <div class="nm" title="${escapeHTML(a.name)}">${escapeHTML(a.name)}</div>
+            <div class="booth">Booth ${escapeHTML(a.booth || '—')}</div>
+          </div>
+        </div>
+        <div class="followers">
+          <div class="one"><div class="label">Instagram</div><div class="num ig" title="${fullNum(a.ig_followers)}">${fmt(a.ig_followers)}</div></div>
+          <div class="one"><div class="label">Twitter / X</div><div class="num x" title="${fullNum(a.x_followers)}">${fmt(a.x_followers)}</div></div>
+        </div>
+        <div class="desc">${escapeHTML(a.desc || '').slice(0, 200)}</div>
+        <div class="footer">
+          <div class="score">Score ${fmt(a.score)}</div>
+          <div class="links">${linksHTML(a)}</div>
+        </div>
+      </div>`;
+    }).join('');
+    cardsEl.innerHTML = cards;
+  }
+
+  function escapeHTML(s) {
+    return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  }
+
+  // --- sort + filter ---
+  function applySort() {
+    const k = currentSort.key;
+    const d = currentSort.dir === 'asc' ? 1 : -1;
+    if (k === 'rank') {
+      // rank is computed; sort by score desc when asc, asc when desc
+      ARTISTS.sort((a, b) => (currentSort.dir === 'asc' ? -1 : 1) * (a.score - b.score) || a.name.localeCompare(b.name));
+    } else if (k === 'name' || k === 'booth') {
+      ARTISTS.sort((a, b) => d * String(a[k] || '').localeCompare(String(b[k] || '')));
+    } else {
+      ARTISTS.sort((a, b) => d * ((a[k] || 0) - (b[k] || 0)));
+    }
+  }
+
+  function applyFilter() {
+    const q = document.getElementById('search').value.trim().toLowerCase();
+    if (!q) return ARTISTS;
+    return ARTISTS.filter(a =>
+      (a.name && a.name.toLowerCase().includes(q)) ||
+      (a.booth && a.booth.toLowerCase().includes(q)) ||
+      (a.ig_handle && a.ig_handle.toLowerCase().includes(q)) ||
+      (a.x_handle && a.x_handle.toLowerCase().includes(q))
+    );
+  }
+
+  function rerender() {
+    applySort();
+    const filtered = applyFilter();
+    document.getElementById('count-pill').innerHTML =
+      `<strong>${filtered.length}</strong> shown`;
+    document.getElementById('empty').style.display = filtered.length ? 'none' : '';
+    if (view === 'table') renderTable(filtered);
+    else renderCards(filtered);
+  }
+
+  // header click → sort
+  document.querySelectorAll('table.ranked th[data-sort]').forEach(th => {
+    th.addEventListener('click', () => {
+      const k = th.dataset.sort;
+      if (currentSort.key === k) currentSort.dir = currentSort.dir === 'asc' ? 'desc' : 'asc';
+      else {
+        currentSort.key = k;
+        // numeric and rank default to desc (big first); text default to asc
+        currentSort.dir = (k === 'name' || k === 'booth') ? 'asc' : 'desc';
+      }
+      document.querySelectorAll('table.ranked th').forEach(t => {
+        t.classList.toggle('sorted', t === th);
+        const arr = t.querySelector('.arr');
+        if (arr && t === th) arr.textContent = currentSort.dir === 'asc' ? '▴' : '▾';
+      });
+      rerender();
+    });
+  });
+
+  // search
+  let searchTimer;
+  document.getElementById('search').addEventListener('input', () => {
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(rerender, 80);
+  });
+
+  // view toggle
+  let view = 'table';
+  const tableBtn = document.getElementById('view-table');
+  const cardsBtn = document.getElementById('view-cards');
+  const tableView = document.getElementById('table-view');
+  const cardsView = document.getElementById('cards-view');
+  tableBtn.addEventListener('click', () => {
+    if (view === 'table') return;
+    view = 'table'; tableBtn.classList.add('on'); cardsBtn.classList.remove('on');
+    tableView.style.display = ''; cardsView.style.display = 'none';
+    rerender();
+  });
+  cardsBtn.addEventListener('click', () => {
+    if (view === 'cards') return;
+    view = 'cards'; cardsBtn.classList.add('on'); tableBtn.classList.remove('on');
+    cardsView.style.display = 'grid'; tableView.style.display = 'none';
+    rerender();
+  });
+
+  rerender();
+
+  // keep the sticky table header below the (sometimes-wrapping) controls bar
+  function updateControlsHeight() {
+    const c = document.querySelector('.controls');
+    if (c) document.documentElement.style.setProperty('--controls-h', c.offsetHeight + 'px');
+  }
+  updateControlsHeight();
+  window.addEventListener('resize', updateControlsHeight);
+})();
+</script>
+</body>
+</html>

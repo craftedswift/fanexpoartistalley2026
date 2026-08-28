@@ -1,0 +1,17 @@
+.DS_Store
+__pycache__/
+*.pyc
+
+# scratch html / log files from scraping experiments
+ig_*.html
+x_*.html
+nitter*.html
+synd*.html
+*.log
+artists_test.json
+
+# Claude / preview tooling
+.claude/
+
+# local preview build (the actual deployed copy lives at /index.html)
+dist/
