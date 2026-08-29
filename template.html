@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>AX 2026 Artist Alley — Ranked by Social Following</title>
-<meta name="description" content="The Anime Expo 2026 Artist Alley list, ranked by combined Twitter/X + Instagram follower count." />
+<title>FAN EXPO Canada 2026 Artist Alley — Ranked by Social Following</title>
+<meta name="description" content="The FAN EXPO Canada 2026 Artist Alley list, ranked by combined Twitter/X + Instagram follower count." />
 <style>
   :root {
     --bg: #0d1117;
@@ -175,14 +175,14 @@
 <body>
 <div class="wrap">
   <header class="page">
-    <h1>AX 2026 Artist Alley <span class="accent">ranked</span> by social following</h1>
-    <div class="sub">All <span id="total-count">…</span> artists from the official AX 2026 Artist Alley list, ranked by their combined Twitter/X + Instagram follower count.</div>
+    <h1>FAN EXPO Canada 2026 Artist Alley <span class="accent">ranked</span> by social following</h1>
+    <div class="sub">All <span id="total-count">…</span> artists from the official FAN EXPO Canada 2026 Artist Alley exhibitor directory, ranked by their combined Twitter/X + Instagram follower count.</div>
     <div class="stats" id="stats-line"></div>
   </header>
 
   <details class="methodology">
     <summary>How it works</summary>
-    <p><strong>Source list:</strong> The official AX 2026 Artist Alley page at <a href="https://www.anime-expo.org/ax2026aalist/" target="_blank">anime-expo.org/ax2026aalist</a>.</p>
+    <p><strong>Source list:</strong> The "Artist Alley" category of the official FAN EXPO Canada 2026 exhibitor directory at <a href="https://fanexpohq.com/fanexpocanada/exhibitor-directory/" target="_blank">fanexpohq.com/fanexpocanada/exhibitor-directory</a>. Most exhibitors there link a personal site, carrd, or Linktree rather than a direct social profile, so handles are resolved from those pages where possible (see resolve_socials.py).
     <p><strong>Follower counts:</strong> Instagram counts come from each profile's public Open Graph metadata (rounded to the nearest "K" the same way IG displays them — for example 29,341 → 29K). Twitter/X counts come from the public syndication embed endpoint and are exact.</p>
     <p><strong>Combined score:</strong> <code>score = max(IG followers, X followers)</code>. Artists with only one platform score on whichever they have. Artists with neither platform (or with private/empty accounts) score 0 and sort last.</p>
     <p><strong>Notes:</strong> These counts show where each account stood when this page was built — they don't refresh live. Some accounts are private, suspended, empty, or use uncommon handles, in which case the count shows as "—". Profile pictures from Instagram use temporary signed URLs and may stop loading after a few days; pictures from X are stable.</p>
@@ -223,7 +223,7 @@
 
   <footer class="page">
     Data comes from public IG og-tags and the X syndication API. Combined score = max(IG, X) followers. ·
-    <a href="https://www.anime-expo.org/ax2026aalist/" target="_blank">Official AX list ↗</a>
+    <a href="https://fanexpohq.com/fanexpocanada/exhibitor-directory/" target="_blank">Official FAN EXPO Canada exhibitor directory ↗</a>
   </footer>
 </div>
 

@@ -148,11 +148,12 @@ def main() -> None:
     ap.add_argument("--limit", type=int, default=0, help="only process the first N artists (0=all)")
     ap.add_argument("--workers", type=int, default=4)
     ap.add_argument("--resume", action="store_true", help="skip artists already in output")
+    ap.add_argument("--in", dest="in_file", default=str(IN_FILE), help="input JSON (artists.json or artists_resolved.json)")
     ap.add_argument("--out", default=str(OUT_FILE))
     args = ap.parse_args()
 
     out_path = Path(args.out)
-    with open(IN_FILE) as f:
+    with open(args.in_file) as f:
         artists = json.load(f)
     if args.limit:
         artists = artists[: args.limit]

@@ -20,9 +20,6 @@ def main():
     # slim down each record to only what the page needs
     slim = []
     for a in artists:
-        # drop the AX placeholder "Artist Directory" entry
-        if "Artist Directory" in (a.get("name") or ""):
-            continue
         slim.append({
             "id": a["id"],
             "name": a["name"],
