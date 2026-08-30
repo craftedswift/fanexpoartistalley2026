@@ -68,6 +68,17 @@
     padding: 6px 12px; border-radius: 999px; font-size: 12px;
   }
   .pill strong { color: var(--text); }
+  .cat-select {
+    background: var(--bg-elev); border: 1px solid var(--border); color: var(--text);
+    border-radius: 8px; padding: 8px 10px; font-size: 13px; outline: none;
+  }
+  .cat-select:focus { border-color: var(--accent); }
+  .cat-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+  .cat-tag {
+    display: inline-block; background: var(--bg-elev); border: 1px solid var(--border);
+    color: var(--text-dim); font-size: 11px; padding: 2px 8px; border-radius: 999px;
+    white-space: nowrap;
+  }
 
   details.methodology {
     background: var(--bg-elev); border: 1px solid var(--border); border-radius: 8px;
@@ -186,10 +197,12 @@
     <p><strong>Follower counts:</strong> Instagram counts come from each profile's public Open Graph metadata (rounded to the nearest "K" the same way IG displays them — for example 29,341 → 29K). Twitter/X counts come from the public syndication embed endpoint and are exact.</p>
     <p><strong>Combined score:</strong> <code>score = max(IG followers, X followers)</code>. Artists with only one platform score on whichever they have. Artists with neither platform (or with private/empty accounts) score 0 and sort last.</p>
     <p><strong>Notes:</strong> These counts show where each account stood when this page was built — they don't refresh live. Some accounts are private, suspended, empty, or use uncommon handles, in which case the count shows as "—". Profile pictures from Instagram use temporary signed URLs and may stop loading after a few days; pictures from X are stable.</p>
+    <p><strong>"Sells" category:</strong> FAN EXPO's exhibitor data doesn't include a product-type field, so categories are inferred from each artist's own website (title, meta description, visible text — see fetch_site_text.py / categories_manual.json) and are best-effort, not exhaustive. Artists with no working website link, or whose site gave no clear signal, are left uncategorized.</p>
   </details>
 
   <div class="controls">
     <input type="text" class="search" id="search" placeholder="Search by artist name, booth, or handle…" />
+    <select class="cat-select" id="cat-filter"><option value="">All categories</option></select>
     <span class="pill">View<strong style="margin: 0 6px;">·</strong>
       <span class="toggle" style="display:inline-flex;margin-left:4px;">
         <button id="view-table" class="on">Table</button>
@@ -207,6 +220,7 @@
           <th class="avatar"></th>
           <th data-sort="name">Artist<span class="arr">▾</span></th>
           <th data-sort="booth">Booth<span class="arr">▾</span></th>
+          <th>Sells</th>
           <th data-sort="ig_followers" class="numeric">Instagram<span class="arr">▾</span></th>
           <th data-sort="x_followers" class="numeric">Twitter/X<span class="arr">▾</span></th>
           <th data-sort="score" class="numeric">Score<span class="arr">▾</span></th>
@@ -236,10 +250,19 @@
     web: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>',
   };
 
+  const CAT_LABELS = {
+    prints: 'Prints', stickers: 'Stickers', pins: 'Enamel Pins', charms: 'Charms/Keychains',
+    apparel: 'Apparel', jewelry: 'Jewelry', plush: 'Plush/Toys', comics: 'Comics/Books',
+    ceramics: 'Ceramics', crafts: 'Handmade Crafts', crochet: 'Crochet', stationery: 'Stationery',
+    props: 'Props/3D Prints', candles: 'Candles/Home', portfolio: 'Illustration/Portfolio',
+    author: 'Author/Novels', game: 'Games', tattoo: 'Tattoo Artist',
+  };
+
   const dataEl = document.getElementById('artist-data');
   let ARTISTS = [];
   try { ARTISTS = JSON.parse(dataEl.textContent); }
   catch (e) { console.error('Bad data:', e); }
+  ARTISTS.forEach(a => { a.categories = (a.categories || []).filter(c => CAT_LABELS[c]); });
 
   // Compute score
   function score(a) {
@@ -256,8 +279,22 @@
   document.getElementById('total-count').textContent = ARTISTS.length;
   const withIG = ARTISTS.filter(a => a.ig_followers).length;
   const withX = ARTISTS.filter(a => a.x_followers).length;
+  const withCat = ARTISTS.filter(a => a.categories.length).length;
   document.getElementById('stats-line').textContent =
-    `${withIG} have Instagram follower data · ${withX} have Twitter/X follower data · score = max(IG, X)`;
+    `${withIG} have Instagram follower data · ${withX} have Twitter/X follower data · ${withCat} tagged by what they sell · score = max(IG, X)`;
+
+  // populate category filter, sorted by frequency
+  (function populateCatFilter() {
+    const counts = {};
+    ARTISTS.forEach(a => a.categories.forEach(c => { counts[c] = (counts[c] || 0) + 1; }));
+    const sel = document.getElementById('cat-filter');
+    Object.keys(counts).sort((a, b) => counts[b] - counts[a]).forEach(c => {
+      const opt = document.createElement('option');
+      opt.value = c;
+      opt.textContent = `${CAT_LABELS[c]} (${counts[c]})`;
+      sel.appendChild(opt);
+    });
+  })();
 
   function fmt(n) {
     if (n == null || n === 0) return '—';
@@ -291,6 +328,11 @@
     return out.join('');
   }
 
+  function catHTML(a) {
+    if (!a.categories.length) return '<span class="muted">—</span>';
+    return `<span class="cat-tags">${a.categories.map(c => `<span class="cat-tag">${CAT_LABELS[c]}</span>`).join('')}</span>`;
+  }
+
   function picHTML(a, large) {
     const url = pic(a);
     if (url) return `<img src="${url}" alt="" loading="lazy" onerror="this.style.display='none';this.parentNode.textContent='${initials(a.name)}';" />`;
@@ -311,6 +353,7 @@
           <span class="desc">${escapeHTML(a.desc || '')}</span>
         </td>
         <td class="booth">${escapeHTML(a.booth || '—')}</td>
+        <td class="sells">${catHTML(a)}</td>
         <td class="numeric ${a.ig_followers ? '' : 'muted'}" title="${fullNum(a.ig_followers)}">${fmt(a.ig_followers)}</td>
         <td class="numeric ${a.x_followers ? '' : 'muted'}" title="${fullNum(a.x_followers)}">${fmt(a.x_followers)}</td>
         <td class="numeric score">${fmt(a.score)}</td>
@@ -334,6 +377,7 @@
             <div class="booth">Booth ${escapeHTML(a.booth || '—')}</div>
           </div>
         </div>
+        ${a.categories.length ? `<div class="cat-tags" style="margin-bottom:8px;">${a.categories.map(c => `<span class="cat-tag">${CAT_LABELS[c]}</span>`).join('')}</div>` : ''}
         <div class="followers">
           <div class="one"><div class="label">Instagram</div><div class="num ig" title="${fullNum(a.ig_followers)}">${fmt(a.ig_followers)}</div></div>
           <div class="one"><div class="label">Twitter / X</div><div class="num x" title="${fullNum(a.x_followers)}">${fmt(a.x_followers)}</div></div>
@@ -368,8 +412,11 @@
 
   function applyFilter() {
     const q = document.getElementById('search').value.trim().toLowerCase();
-    if (!q) return ARTISTS;
-    return ARTISTS.filter(a =>
+    const cat = document.getElementById('cat-filter').value;
+    let out = ARTISTS;
+    if (cat) out = out.filter(a => a.categories.includes(cat));
+    if (!q) return out;
+    return out.filter(a =>
       (a.name && a.name.toLowerCase().includes(q)) ||
       (a.booth && a.booth.toLowerCase().includes(q)) ||
       (a.ig_handle && a.ig_handle.toLowerCase().includes(q)) ||
@@ -412,6 +459,9 @@
     clearTimeout(searchTimer);
     searchTimer = setTimeout(rerender, 80);
   });
+
+  // category filter
+  document.getElementById('cat-filter').addEventListener('change', rerender);
 
   // view toggle
   let view = 'table';

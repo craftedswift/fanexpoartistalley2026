@@ -33,6 +33,7 @@ def main():
             "ig_profile_pic": a.get("ig_profile_pic"),
             "x_profile_pic": a.get("x_profile_pic"),
             "x_name": a.get("x_name"),
+            "categories": a.get("categories") or [],
         })
 
     js = json.dumps(slim, ensure_ascii=False)
