@@ -153,14 +153,14 @@ def main() -> None:
     args = ap.parse_args()
 
     out_path = Path(args.out)
-    with open(args.in_file) as f:
+    with open(args.in_file, encoding="utf-8") as f:
         artists = json.load(f)
     if args.limit:
         artists = artists[: args.limit]
 
     existing: dict[int, dict] = {}
     if args.resume and out_path.exists():
-        with open(out_path) as f:
+        with open(out_path, encoding="utf-8") as f:
             for a in json.load(f):
                 existing[a["id"]] = a
 
@@ -172,7 +172,7 @@ def main() -> None:
     save_every = 20
 
     def _save():
-        with open(out_path, "w") as f:
+        with open(out_path, "w", encoding="utf-8") as f:
             json.dump(sorted(results, key=lambda a: a["id"]), f, indent=2, ensure_ascii=False)
 
     with ThreadPoolExecutor(max_workers=args.workers) as ex:

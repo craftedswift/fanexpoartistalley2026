@@ -28,7 +28,7 @@ def main():
                     help="429 retry attempts per artist before deferring")
     args = ap.parse_args()
 
-    with open(FILE) as f:
+    with open(FILE, encoding="utf-8") as f:
         artists = json.load(f)
 
     todo = [
@@ -71,7 +71,7 @@ def main():
               f"err={r.get('x_error')}  fixed={fixed} fail={perma_fail}", flush=True)
 
         # save after every record — slow runs shouldn't risk losing progress
-        with open(FILE, "w") as f:
+        with open(FILE, "w", encoding="utf-8") as f:
             json.dump(sorted(artists, key=lambda a: a["id"]), f, indent=2, ensure_ascii=False)
 
         if i == len(todo):

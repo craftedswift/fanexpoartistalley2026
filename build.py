@@ -12,9 +12,9 @@ OUT_ROOT = ROOT / "index.html"
 
 
 def main():
-    with open(SRC_HTML) as f:
+    with open(SRC_HTML, encoding="utf-8") as f:
         html = f.read()
-    with open(DATA) as f:
+    with open(DATA, encoding="utf-8") as f:
         artists = json.load(f)
 
     # slim down each record to only what the page needs
@@ -42,7 +42,7 @@ def main():
 
     OUT_HTML.parent.mkdir(parents=True, exist_ok=True)
     for path in (OUT_HTML, OUT_ROOT):
-        with open(path, "w") as f:
+        with open(path, "w", encoding="utf-8") as f:
             f.write(out_html)
         print(f"Wrote {path} ({len(out_html)/1024:.1f} KB, {len(slim)} artists)")
 
