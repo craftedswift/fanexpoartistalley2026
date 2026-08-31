@@ -79,6 +79,18 @@
     color: var(--text-dim); font-size: 11px; padding: 2px 8px; border-radius: 999px;
     white-space: nowrap;
   }
+  .save-btn {
+    background: transparent; border: 0; cursor: pointer; padding: 4px; line-height: 1;
+    font-size: 18px; color: var(--text-muted); border-radius: 6px;
+  }
+  .save-btn:hover { background: var(--bg-hover); }
+  .save-btn.saved { color: var(--accent); }
+  .toggle-saved {
+    background: var(--bg-elev); border: 1px solid var(--border); color: var(--text-dim);
+    padding: 6px 12px; border-radius: 999px; font-size: 12px; cursor: pointer;
+  }
+  .toggle-saved.on { background: var(--accent); border-color: var(--accent); color: #1a1408; font-weight: 600; }
+  .card .save-btn { position: absolute; top: 10px; right: 10px; font-size: 20px; }
 
   details.methodology {
     background: var(--bg-elev); border: 1px solid var(--border); border-radius: 8px;
@@ -203,6 +215,7 @@
   <div class="controls">
     <input type="text" class="search" id="search" placeholder="Search by artist name, booth, or handle…" />
     <select class="cat-select" id="cat-filter"><option value="">All categories</option></select>
+    <button class="toggle-saved" id="saved-filter" type="button">☆ Saved (0)</button>
     <span class="pill">View<strong style="margin: 0 6px;">·</strong>
       <span class="toggle" style="display:inline-flex;margin-left:4px;">
         <button id="view-table" class="on">Table</button>
@@ -216,6 +229,7 @@
     <table class="ranked" id="ranked-table">
       <thead>
         <tr>
+          <th class="save-col"></th>
           <th data-sort="rank" class="sorted">#<span class="arr">▾</span></th>
           <th class="avatar"></th>
           <th data-sort="name">Artist<span class="arr">▾</span></th>
@@ -263,6 +277,31 @@
   try { ARTISTS = JSON.parse(dataEl.textContent); }
   catch (e) { console.error('Bad data:', e); }
   ARTISTS.forEach(a => { a.categories = (a.categories || []).filter(c => CAT_LABELS[c]); });
+
+  // --- saved booths (localStorage, per-browser) ---
+  const SAVE_KEY = 'fanexpo2026-saved-artists';
+  let SAVED = new Set();
+  try { SAVED = new Set(JSON.parse(localStorage.getItem(SAVE_KEY) || '[]')); }
+  catch (e) { SAVED = new Set(); }
+  function persistSaved() {
+    try { localStorage.setItem(SAVE_KEY, JSON.stringify([...SAVED])); } catch (e) {}
+  }
+  function isSaved(a) { return SAVED.has(a.id); }
+  function toggleSaved(id) {
+    if (SAVED.has(id)) SAVED.delete(id); else SAVED.add(id);
+    persistSaved();
+    updateSavedPill();
+    rerender();
+  }
+  function updateSavedPill() {
+    const btn = document.getElementById('saved-filter');
+    btn.textContent = `${SAVED.size ? '★' : '☆'} Saved (${SAVED.size})`;
+    btn.classList.toggle('has-items', SAVED.size > 0);
+  }
+  function saveBtnHTML(a) {
+    const on = isSaved(a);
+    return `<button class="save-btn${on ? ' saved' : ''}" data-save-id="${a.id}" title="${on ? 'Remove from saved' : 'Save this booth'}" aria-label="Save">${on ? '★' : '☆'}</button>`;
+  }
 
   // Compute score
   function score(a) {
@@ -346,6 +385,7 @@
     const rows = filtered.map(a => {
       const rankCls = a.rank <= 10 ? 'rank top' : 'rank';
       return `<tr data-id="${a.id}">
+        <td class="save-col">${saveBtnHTML(a)}</td>
         <td class="${rankCls}">${a.rank}</td>
         <td class="avatar"><div class="pic">${picHTML(a)}</div></td>
         <td class="name">
@@ -369,6 +409,7 @@
     const cards = filtered.map(a => {
       const rankCls = a.rank <= 10 ? 'rank-bubble top' : 'rank-bubble';
       return `<div class="card" data-id="${a.id}">
+        ${saveBtnHTML(a)}
         <div class="${rankCls}">#${a.rank}</div>
         <div class="head">
           <div class="pic">${picHTML(a)}</div>
@@ -415,6 +456,7 @@
     const cat = document.getElementById('cat-filter').value;
     let out = ARTISTS;
     if (cat) out = out.filter(a => a.categories.includes(cat));
+    if (savedOnly) out = out.filter(a => isSaved(a));
     if (!q) return out;
     return out.filter(a =>
       (a.name && a.name.toLowerCase().includes(q)) ||
@@ -462,6 +504,26 @@
 
   // category filter
   document.getElementById('cat-filter').addEventListener('change', rerender);
+
+  // saved-only toggle
+  let savedOnly = false;
+  updateSavedPill();
+  document.getElementById('saved-filter').addEventListener('click', () => {
+    savedOnly = !savedOnly;
+    document.getElementById('saved-filter').classList.toggle('on', savedOnly);
+    rerender();
+  });
+
+  // save/unsave click (delegated, works for both table + card views)
+  function onSaveClick(e) {
+    const btn = e.target.closest('.save-btn');
+    if (!btn) return;
+    e.preventDefault();
+    e.stopPropagation();
+    toggleSaved(Number(btn.dataset.saveId));
+  }
+  document.getElementById('rows').addEventListener('click', onSaveClick);
+  document.getElementById('cards-view').addEventListener('click', onSaveClick);
 
   // view toggle
   let view = 'table';
