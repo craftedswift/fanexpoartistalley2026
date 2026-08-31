@@ -189,8 +189,8 @@
     td.links a { width: 22px; height: 22px; margin-right: 2px; }
   }
   @media (max-width: 540px) {
-    td.booth { display: none; }
-    th[data-sort="booth"] { display: none; }
+    td.sells, th.sells-col { display: none; }
+    td[data-col="x_followers"], th[data-sort="x_followers"] { display: none; }
     .card .desc { display: none; }
   }
 </style>
@@ -234,7 +234,7 @@
           <th class="avatar"></th>
           <th data-sort="name">Artist<span class="arr">▾</span></th>
           <th data-sort="booth">Booth<span class="arr">▾</span></th>
-          <th>Sells</th>
+          <th class="sells-col">Sells</th>
           <th data-sort="ig_followers" class="numeric">Instagram<span class="arr">▾</span></th>
           <th data-sort="x_followers" class="numeric">Twitter/X<span class="arr">▾</span></th>
           <th data-sort="score" class="numeric">Score<span class="arr">▾</span></th>
@@ -395,7 +395,7 @@
         <td class="booth">${escapeHTML(a.booth || '—')}</td>
         <td class="sells">${catHTML(a)}</td>
         <td class="numeric ${a.ig_followers ? '' : 'muted'}" title="${fullNum(a.ig_followers)}">${fmt(a.ig_followers)}</td>
-        <td class="numeric ${a.x_followers ? '' : 'muted'}" title="${fullNum(a.x_followers)}">${fmt(a.x_followers)}</td>
+        <td data-col="x_followers" class="numeric ${a.x_followers ? '' : 'muted'}" title="${fullNum(a.x_followers)}">${fmt(a.x_followers)}</td>
         <td class="numeric score">${fmt(a.score)}</td>
         <td class="links">${linksHTML(a)}</td>
       </tr>`;
